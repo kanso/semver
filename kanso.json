@@ -1,0 +1,10 @@
+{
+    "name": "semver",
+    "version": "1.0.12",
+    "description" : "The semantic version parser used by npm.",
+    "website": "https://github.com/isaacs/node-semver",
+    "modules": "semver.js",
+    "dependencies": {
+        "modules": null
+    }
+}
