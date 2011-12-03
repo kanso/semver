@@ -5,6 +5,7 @@
     "website": "https://github.com/isaacs/node-semver",
     "modules": "semver.js",
     "dependencies": {
-        "modules": null
+        "modules": null,
+        "underscore": null
     }
 }

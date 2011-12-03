@@ -1,3 +1,6 @@
+// modified to work in the browser by using underscore.js
+var _ = require('underscore')._;
+
 
 // See http://semver.org/
 // This implementation is a *hair* less strict in that it allows
@@ -26,7 +29,7 @@ var semver = "\\s*[v=]*\\s*([0-9]+)"                // major
     }
 
 
-Object.getOwnPropertyNames(expressions).forEach(function (i) {
+_(expressions).keys().forEach(function (i) {
   exports[i] = function (str) {
     return ("" + (str || "")).match(expressions[i])
   }
@@ -87,24 +90,23 @@ var starExpression = /(<|>)?=?\s*\*/g
   , compTrimReplace = "$1$3"
 
 function toComparators (range) {
-  var ret = (range || "").trim()
-    .replace(expressions.parseRange, exports.rangeReplace)
-    .replace(compTrimExpression, compTrimReplace)
-    .split(/\s+/)
-    .join(" ")
-    .split("||")
+  var ret = _(
+      (range || "").trim()
+      .replace(expressions.parseRange, exports.rangeReplace)
+      .replace(compTrimExpression, compTrimReplace)
+      .split(/\s+/)
+      .join(" ")
+      .split("||")
+    )
     .map(function (orchunk) {
-      return orchunk
-        .split(" ")
+      return _(orchunk.split(" "))
         .map(replaceXRanges)
         .map(replaceSpermies)
         .map(replaceStars)
         .join(" ").trim()
     })
     .map(function (orchunk) {
-      return orchunk
-        .trim()
-        .split(/\s+/)
+      return _(orchunk.trim().split(/\s+/))
         .filter(function (c) { return c.match(expressions.validComparator) })
     })
     .filter(function (c) { return c.length })
@@ -118,7 +120,7 @@ function replaceStars (stars) {
 // "2.x","2.x.x" --> ">=2.0.0- <2.1.0-"
 // "2.3.x" --> ">=2.3.0- <2.4.0-"
 function replaceXRanges (ranges) {
-  return ranges.split(/\s+/)
+  return _(ranges.split(/\s+/))
                .map(replaceXRange)
                .join(" ")
 }
@@ -186,12 +188,12 @@ function validRange (range) {
   var c = toComparators(range)
   return (c.length === 0)
        ? null
-       : c.map(function (c) { return c.join(" ") }).join("||")
+       : _(c).map(function (c) { return c.join(" ") }).join("||")
 }
 
 // returns the highest satisfying version in the list, or undefined
 function maxSatisfying (versions, range) {
-  return versions
+  return _(versions)
     .filter(function (v) { return satisfies(v, range) })
     .sort(compare)
     .pop()
